@@ -44,7 +44,7 @@ class RobotConfig(BaseConfig):
         self.drive: wpd.DifferentialDrive = wpd.DifferentialDrive(self.left_motor, self.right_motor)
         
         # Controllers
-        self.driver: LogitechX3D = LogitechX3D(0)
+        self.driver: wp.XboxController = wp.XboxController(0)
     
     def setDisplacementY(self, power: float, displacement: float) -> None:
         if -self.navx.getDisplacementY() <= displacement:
