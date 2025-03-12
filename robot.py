@@ -20,6 +20,7 @@ class MyRobot(wp.TimedRobot):
         self.elevatorPos: int = 0
         self.armPos: int = 0
         self.intakeSpeed: int = 0
+        self.HangPos: int = 0
 
     def robotPeriodic(self):
         pass

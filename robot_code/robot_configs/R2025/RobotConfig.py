@@ -29,6 +29,7 @@ class RobotConfig(BaseConfig):
         elevator_follower   : int = 7 #TODO: check the actual config on the bot for this motor
         arm                 : int = 8 #TODO: check the actual config on the bot for this motor
         intake              : int = 9 #TODO: check the actual config on the bot for this motor
+        hang                : int = 10 #TODO: check the actual config on the bot for this motor
         
         # Drive Motors
         self.left_motor          : REVSparkMax = self.addDriveMotor(REVSparkMax(left_motor, BRUSHLESS))
@@ -38,7 +39,8 @@ class RobotConfig(BaseConfig):
         self.elevator            : REVSparkMax = REVSparkMax(elevator, BRUSHLESS)
         self.elevator_follower   : REVSparkMax = REVSparkMax(elevator_follower, BRUSHLESS)
         self.arm                 : REVSparkMax = REVSparkMax(arm, BRUSHLESS)       
-        self.intake              : REVSparkMax = REVSparkMax(intake, BRUSHLESS)       
+        self.intake              : REVSparkMax = REVSparkMax(intake, BRUSHLESS)   
+        self.hang                : REVSparkMax = REVSparkMax(hang, BRUSHLESS)    
 
         # Follower Motors
         self.addFollowerMotor(self.left_motor, self.left_motor_follower)
