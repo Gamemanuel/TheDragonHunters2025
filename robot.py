@@ -17,6 +17,10 @@ class MyRobot(wp.TimedRobot):
         self.robot: RobotConfig = RobotConfig()
         self.robot.resetNavx()
 
+        self.elevatorPos: int = 0
+        self.armPos: int = 0
+        self.intakeSpeed: int = 0
+
     def robotPeriodic(self):
         pass
 
@@ -34,14 +38,34 @@ class MyRobot(wp.TimedRobot):
         """This function is called once each time the robot enters teleoperated mode."""
         self.robot.setDriveIdleMode(COAST)
         self.robot.resetNavx()
+    
 
     def teleopPeriodic(self):
         """This function is called periodically during teleoperated mode."""
         #SPEED_MULT = ((-self.robot.driver.getThrottle()) * 0.25) + 0.75
         
         self.robot.drive.arcadeDrive(
-            -self.robot.driver.getLeftY(), self.robot.driver.getRightX()
+            -self.robot.hunter.getLeftY(), self.robot.hunter.getRightX()
         )
 
+        # if the left joysticks is moved up and down then the elevator goes up or down
+        if self.robot.august.getLeftY() != 0:
+            self.elevatorPos = self.elevatorPos + self.robot.august.getLeftY()
+            self.robot.elevator.set(self.elevatorPos)
 
-    
+        # if the right joystick is moved up and down the arm that holds the intake moves up or down
+        if self.robot.august.getRightY() != 0:
+            self.armPos = self.armPos + self.robot.august.getRightY()
+            self.robot.arm.set(self.armPos)
+
+        # if the left trigger is pressed then the intake spins in reverse
+        if self.robot.august.getLeftTriggerAxis() != 0:
+            self.intakeSpeed = self.intakeSpeed - self.robot.august.getLeftTriggerAxis()
+        else: 
+            self.intakeSpeed = 0
+
+        # if the right trigger is pressed the intake spins forwards
+        if self.robot.august.getRightTriggerAxis() != 0:
+            self.intakeSpeed = self.intakeSpeed + self.robot.august.getRightTriggerAxis()
+        else: 
+            self.intakeSpeed = 0   
