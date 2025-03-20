@@ -62,7 +62,8 @@ class MyRobot(wp.TimedRobot):
             self.robot.elevator_follower.set(.10)
 
         # gavin's better method
-         #TODO: add the better method
+        #TODO: add the better method
+
         # if the right joystick is moved up and down the arm that holds the intake moves up or down
         self.robot.arm.set(self.robot.august.getRightY() * 0.40)
 
@@ -73,3 +74,8 @@ class MyRobot(wp.TimedRobot):
             self.robot.intake.set(-self.robot.august.getRightTriggerAxis())
         else:
             self.robot.intake.set(0)
+
+        # when button "down d-pad" is pressed move the intake to the correct position
+        # TODO: addd the code in respose to the d-pad as well as getting the d-pad on the button to work
+
+        
