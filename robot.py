@@ -60,7 +60,8 @@ class MyRobot(wp.TimedRobot):
             self.robot.elevator_follower.set(.10)
 
         # gavin's better method
-        #TODO: add the better method
+        #TODO: add the better method ie make the code "motor break"
+
 
         # if the right joystick is moved up and down the arm that holds the intake moves up or down
         self.robot.arm.set(self.robot.august.getRightY() * 0.40)
