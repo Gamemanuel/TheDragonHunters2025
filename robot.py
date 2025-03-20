@@ -40,8 +40,6 @@ class MyRobot(wp.TimedRobot):
         self.robot.setDriveIdleMode(COAST)
         self.robot.resetNavx()
         
-    
-
     def teleopPeriodic(self):
         """This function is called periodically during teleoperated mode."""
         
@@ -78,4 +76,3 @@ class MyRobot(wp.TimedRobot):
         # when button "down d-pad" is pressed move the intake to the correct position
         # TODO: addd the code in respose to the d-pad as well as getting the d-pad on the button to work
 
-        
