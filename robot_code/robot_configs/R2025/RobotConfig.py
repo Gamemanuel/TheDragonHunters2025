@@ -63,8 +63,16 @@ class RobotConfig(BaseConfig):
         self.elevator_follower.setIdleMode(BRAKE)
 
     
+    def setDisplacementZ(self, power: float, displacement: float) -> None:
+        if -self.navx.getDisplacementZ() <= displacement:
+            self.drive.tankDrive(-power, -power, False)
+
     def setDisplacementY(self, power: float, displacement: float) -> None:
         if -self.navx.getDisplacementY() <= displacement:
+            self.drive.tankDrive(-power, -power, False)
+
+    def setDisplacementX(self, power: float, displacement: float) -> None:
+        if -self.navx.getDisplacementX() <= displacement:
             self.drive.tankDrive(-power, -power, False)
     
     def getDisplacementY(self) -> float:
