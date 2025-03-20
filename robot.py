@@ -39,6 +39,7 @@ class MyRobot(wp.TimedRobot):
         """This function is called once each time the robot enters teleoperated mode."""
         self.robot.setDriveIdleMode(COAST)
         self.robot.resetNavx()
+        
     
 
     def teleopPeriodic(self):

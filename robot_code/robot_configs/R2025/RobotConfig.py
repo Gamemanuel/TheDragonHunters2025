@@ -56,8 +56,11 @@ class RobotConfig(BaseConfig):
         
         # Controllers
         self.hunter: wp.XboxController = wp.XboxController(0)
-
         self.august: wp.XboxController = wp.XboxController(1)
+
+        # set elevator as BRAKE
+        self.elevator.setIdleMode(BRAKE)
+        self.elevator_follower.setIdleMode(BRAKE)
 
     
     def setDisplacementY(self, power: float, displacement: float) -> None:
