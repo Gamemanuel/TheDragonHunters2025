@@ -32,7 +32,7 @@ class MyRobot(wp.TimedRobot):
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
-        self.robot.setDisplacementY(0.5, 1)
+        self.robot.setDisplacementY(-0.5, .25)
         # self.robot.setRotation(0.33, 0.25)
 
     def teleopInit(self):
@@ -48,8 +48,8 @@ class MyRobot(wp.TimedRobot):
         )
 
         # if the left joysticks is moved up and down then the elevator goes up or down
-        self.robot.elevator.set(self.robot.august.getLeftY() * 0.75)
-        self.robot.elevator_follower.set(self.robot.august.getLeftY() * 0.75)
+        self.robot.elevator.set(self.robot.august.getLeftY() * 0.50)
+        self.robot.elevator_follower.set(self.robot.august.getLeftY() * 0.50)
         elevatorEncoder: float = self.robot.elevator.getEncoder
 
         # hold the elevator and elevator follower in the correct pos if the pos is not being changed
@@ -75,4 +75,7 @@ class MyRobot(wp.TimedRobot):
 
         # when button "down d-pad" is pressed move the intake to the correct position
         # TODO: addd the code in respose to the d-pad as well as getting the d-pad on the button to work
+        if self.robot.august.getYButtonPressed == True:
+            pass 
+            
 
