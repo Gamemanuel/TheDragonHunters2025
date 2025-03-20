@@ -52,6 +52,12 @@ class MyRobot(wp.TimedRobot):
         # if the left joysticks is moved up and down then the elevator goes up or down
         self.robot.elevator.set(self.robot.august.getLeftY() * 0.75)
         self.robot.elevator_follower.set(self.robot.august.getLeftY() * 0.75)
+        elevatorEncoder: float = self.robot.elevator.getEncoder
+
+        # hold the elevator and elevator follower in the correct pos if the pos is not being changed
+        if self.robot.august.getLeftY() == 0:
+            self.robot.elevator.set(.10)
+            self.robot.elevator_follower.set(.10)
 
         # if the right joystick is moved up and down the arm that holds the intake moves up or down
         self.robot.arm.set(self.robot.august.getRightY() * 0.40)
