@@ -59,27 +59,8 @@ class MyRobot(wp.TimedRobot):
 
         # zack's terrible method
         if self.robot.august.getLeftY() == 0:
-            self.robot.elevator.set(.10)
-            self.robot.elevator_follower.set(.10)
+            self.robot.elevator.set(.20)
+            self.robot.elevator_follower.set(.20)
 
         # gavin's better method
         #TODO: add the better method ie make the code "motor break"
-
-
-        # if the right joystick is moved up and down the arm that holds the intake moves up or down
-        self.robot.arm.set(self.robot.august.getRightY() * 0.40)
-
-        # if the left trigger is pressed then the intake spins in reverse
-        if self.robot.august.getLeftTriggerAxis() != 0:
-            self.robot.intake.set(self.robot.august.getLeftTriggerAxis())
-        elif self.robot.august.getRightTriggerAxis() != 0:
-            self.robot.intake.set(-self.robot.august.getRightTriggerAxis())
-        else:
-            self.robot.intake.set(0)
-
-        # when button "down d-pad" is pressed move the intake to the correct position
-        # TODO: addd the code in respose to the d-pad as well as getting the d-pad on the button to work
-        if self.robot.august.getYButtonPressed == True:
-            pass  
-            
-
