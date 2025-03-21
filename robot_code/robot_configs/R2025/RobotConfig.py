@@ -29,7 +29,7 @@ class RobotConfig(BaseConfig):
         elevator_follower   : int = 7 
         arm                 : int = 9 
         intake              : float = 8 
-        #hang                : int = 10 #TODO: check the actual config on the bot for this motor / the robot does not have a hang so not nessisarry
+
         
         # Drive Motors
         self.left_motor          : REVSparkMax = self.addDriveMotor(REVSparkMax(left_motor, BRUSHLESS))
@@ -40,7 +40,7 @@ class RobotConfig(BaseConfig):
         self.elevator_follower   : REVSparkMax = REVSparkMax(elevator_follower, BRUSHLESS)
         self.arm                 : REVSparkMax = REVSparkMax(arm, BRUSHLESS)       
         self.intake              : REVSparkMax = REVSparkMax(intake, BRUSHLESS)   
-        self.hang                : REVSparkMax = REVSparkMax(hang, BRUSHLESS)    
+ 
 
         # Follower Motors
         self.addFollowerMotor(self.left_motor, self.left_motor_follower)
