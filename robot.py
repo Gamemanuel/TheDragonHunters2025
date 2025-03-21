@@ -32,8 +32,15 @@ class MyRobot(wp.TimedRobot):
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
-        self.robot.setDisplacementZ(-0.25, .001) 
-        # self.robot.setRotation(0.33, 0.25)
+        while self.robot.left_motor.getEncoder <= 1000:
+            self.robot.drive.arcadeDrive(
+                1 , 0
+            )
+        self.robot.drive.arcadeDrive (0, 0)
+        while self.robot.intake.getEncoder <= 400:
+            self.robot.intake.set(1)
+        self.robot.intake.set(0)
+
 
     def teleopInit(self):
         """This function is called once each time the robot enters teleoperated mode."""
