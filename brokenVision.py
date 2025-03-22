@@ -31,7 +31,6 @@ def main():
         print("Fatal Error: Could not open the camera code:E1")
         exit() # kills the program because it is a fatal error
 
-     
         # Capture frame-by-frame
         ret, frame = cap.read()
         if not ret:

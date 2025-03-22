@@ -5,7 +5,6 @@ import wpilib.drive as wpd
 import wpilib as wp
 from ...robot_utils.Logitech_X3D_Joystick import LogitechX3D
 
-
 class RobotConfig(BaseConfig):
     """
     Robot configuration for the 2025 robot.
@@ -54,8 +53,7 @@ class RobotConfig(BaseConfig):
         elevator_follower   : int = 7 
         arm                 : int = 9 
         intake              : float = 8 
-
-        
+    
         # Drive Motors
         self.left_motor          : REVSparkMax = self.addDriveMotor(REVSparkMax(left_motor, BRUSHLESS))
         self.left_motor_follower : REVSparkMax = self.addDriveMotor(REVSparkMax(left_motor_follower, BRUSHLESS))
@@ -65,7 +63,6 @@ class RobotConfig(BaseConfig):
         self.elevator_follower   : REVSparkMax = REVSparkMax(elevator_follower, BRUSHLESS)
         self.arm                 : REVSparkMax = REVSparkMax(arm, BRUSHLESS)       
         self.intake              : REVSparkMax = REVSparkMax(intake, BRUSHLESS)   
- 
 
         # Follower Motors
         self.addFollowerMotor(self.left_motor, self.left_motor_follower)
@@ -87,7 +84,6 @@ class RobotConfig(BaseConfig):
         self.elevator.setIdleMode(BRAKE)
         self.elevator_follower.setIdleMode(BRAKE)
 
-    
     def setDisplacementZ(self, power: float, displacement: float) -> None:
         if -self.navx.getDisplacementZ() <= displacement:
             self.drive.tankDrive(-power, -power, False)
@@ -101,13 +97,11 @@ class RobotConfig(BaseConfig):
             self.drive.tankDrive(-power, -power, False)
     
     def getDisplacementY(self) -> float:
-        return self.navx.getDisplacementY()
-    
+        return self.navx.getDisplacementY()   
         
     def setRotation(self, power: float, rotation: float) -> None:
         if self.navx.getRotation2d().cos() >= rotation:
             self.drive.tankDrive(power, -power, False)
 
     def getRotation(self) -> float:
-        return self.navx.getRotation2d()
-        
+        return self.navx.getRotation2d()     

@@ -2,6 +2,7 @@ import wpilib as wp # type: ignore
 from wpilib import SmartDashboard as sd # type: ignore
 from robot_code.robot_configs.R2025.RobotConfig import RobotConfig
 from robot_code.constants import *
+import math
 
 
 class MyRobot(wp.TimedRobot):
@@ -11,7 +12,7 @@ class MyRobot(wp.TimedRobot):
         should be used for any initialization code.
         """
         self.cameraserver = wp.CameraServer()
-        self.cameraserver.launch("Vision.py:main")
+        self.cameraserver.launch("vision.py:main")
         self.TURN_MULT: float = 0.5
 
         self.robot: RobotConfig = RobotConfig()
@@ -23,10 +24,10 @@ class MyRobot(wp.TimedRobot):
         self.drivetrainWheelDiameter: int = 6
 
         # every rotation of the motor the corresponding value is the distance traveled
-        self.drivetrainMeters: float = inch_to_meter(self.robot.DRIVETRAIN_WHEEL_DIAMATER, self.robot.DRIVETRAIN_GEAR_RATIO) # 2 is radians to the gear ratio (8.46) to in (/6) to meters * 100
-        self.armMeter: float = inch_to_meter(self.robot.ARM_WHEEL_DIAMATER, self.robot.ARM_GEAR_RATIO)  
-        self.intakeMeter: float = inch_to_meter(self.robot.INTAKE_WHEEL_DIAMATER, self.robot.INTAKE_GEAR_RATIO)
-        self.elevatorMeter: float = inch_to_meter(self.robot.ELEVATOR_WHEEL_DIAMATER, self.robot.ELEVATOR_GEAR_RATIO)
+        self.drivetrainMeters: float = rotationToInch(self.robot.DRIVETRAIN_WHEEL_DIAMATER, self.robot.DRIVETRAIN_GEAR_RATIO) # 2 is radians to the gear ratio (8.46) to in (/6) to meters * 100
+        self.armMeter: float = rotationToInch(self.robot.ARM_WHEEL_DIAMATER, self.robot.ARM_GEAR_RATIO)  
+        self.intakeMeter: float = rotationToInch(self.robot.INTAKE_WHEEL_DIAMATER, self.robot.INTAKE_GEAR_RATIO)
+        self.elevatorMeter: float = rotationToInch(self.robot.ELEVATOR_WHEEL_DIAMATER, self.robot.ELEVATOR_GEAR_RATIO)
 
     def robotPeriodic(self):
         pass
@@ -35,12 +36,14 @@ class MyRobot(wp.TimedRobot):
         """This function is run once each time the robot enters autonomous mode."""
         self.robot.setDriveIdleMode(BRAKE)
         self.robot.resetNavx()
+        # TODO: make all the motors set to BRAKE during auto init
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
-        self.robot.drive.arcadeDrive(
-            .5, 0
-        )
+        #self.robot.drive.arcadeDrive(.5, 0)
+
+        self.targetDrivetrainPos(30,.5)
+
     def teleopInit(self):
         """This function is called once each time the robot enters teleoperated mode."""
         self.robot.setDriveIdleMode(COAST)
@@ -69,44 +72,121 @@ class MyRobot(wp.TimedRobot):
         self.robot.arm.set(self.robot.august.getRightY()*.50)
 
     def targetElevatorPos(self, targetPos, power):
-        """ this function allows you to run the ELEVATOR to a specific distance UP in METERS
+        """
+        this function allows you to run the ELEVATOR to a specific distance UP in METERS
         targetPos = Distance that you want to travel
-        power = power of ELEVAROR"""
-        pass
-        # 1 motor rotation = distancevar
-        # rotations =  targetpos / distancevar
-        # 4092 encoder ticks = 1 rotation
+        power = power of ELEVAROR
+        """
+        # starting rotation
+        startingEncoderTicks: float = self.robot.elevator.getEncoder().getPosition()
+
+        # the actual motor rotations = targetPos / elevatorMeters
+        self.actualRotation: float = targetPos / self.elevatorMeter
+
+        # convert the motor rotations into ticks
+        self.actualTicks: float = (self.actualRotation * self.robot.TPR)
+
+        # wait untill the encoder ticks on the robot == the wanted encoder ticks
+        while self.actualTicks >= encoderTicksTraveled(startingEncoderTicks, self.robot.elevator.getEncoder().getPosition()):
+
+            # make the elevator move up
+            self.robot.elevator.set(power)
+            self.robot.elevator_follower.set(power)
+        
+        # after the correct ticks are hit kill the elevator
+        self.robot.elevator.set(0)
+        self.robot.elevator_follower.set(0)
+
 
     def targetDrivetrainPos(self, targetPos, power):
-        """ this function allows you to run the DRIVETRAIN to a specific distance FORWARD in METERS
+        """
+        this function allows you to run the DRIVETRAIN to a specific distance FORWARD in METERS
         targetPos = Distance that you want to travel
-        power = power of DRIVETRAIN"""
-        #  
-        # while 
-        pass
+        power = power of DRIVETRAIN
+        """
+        # starting rotation
+        startingEncoderTicks: float = self.robot.left_motor.getEncoder().getPosition()
+
+        # the actual motor rotations = targetPos / drivetrainMeters
+        self.actualRotation: float = (targetPos / self.drivetrainMeters)
+        
+        # convert the motor rotations into ticks
+        self.actualTicks: float = (self.actualRotation * self.robot.TPR)
+
+        # wait untill the encoder ticks on the robot == the wanted encoder ticks
+        while self.actualTicks <= encoderTicksTraveled(startingEncoderTicks, self.robot.left_motor.getEncoder().getPosition()): 
+
+            # make the drivetrain drive forward
+            self.robot.drive.arcadeDrive (power, 0)
+
+        # after the correct ticks are hit kill the drivetrain
+        self.robot.drive.arcadeDrive(0,0)
 
     def targetArmPos(self, targetPos, power):
-        """ this function allows you to turn the ARM to a specific distance in METERS
+        """
+        this function allows you to turn the ARM to a specific distance in METERS
         targetPos = Distance that you want to the arm rotate
-        power = power of ARM"""
-        pass
+        power = power of ARM
+        """
+        # starting rotation
+        startingEncoderTicks: float = self.robot.arm.getEncoder().getPosition()
 
-    def targetIntakePos(self, targetPos, power):
-        """ this function allows you to spin the INTAKE to a specific distance in METERS
-        power = power of INTAKE"""
-        pass
+        # the actual motor rotations = targetPos / armMeter
+        self.actualRotation: float = (targetPos / self.armMeter)
+        
+        # convert the motor rotations into ticks
+        self.actualTicks: float = (self.actualRotation * self.robot.TPR)
 
+        # wait untill the encoder ticks on the robot == the wanted encoder ticks
+        while self.actualTicks >= encoderTicksTraveled(startingEncoderTicks, self.robot.arm.getEncoder().getPosition()): 
+
+            # make the drivetrain drive forward
+            self.robot.arm.set(power)
+
+        # after the correct ticks are hit kill the drivetrain
+        self.robot.arm.set(0)
+        
     def targetIntakeRotation(self, targetRotation, power):
-        """ this function allows you to spin the INTAKE forward for a specific # of rotations
-        power = power of INTAKE"""
-        # target rotation is in rotations and is the wanted acutal rotation
-        # ticks in a rotation is 4096
+
+        # description of the function
+        """ 
+        this function allows you to spin the INTAKE forward for a specific # of rotations
+
+        power = power of INTAKE. 
+        
+        targetRotations is the amount of turns you want the intake wheel to make
+        """
+        # starting rotation
+        startingEncoderTicks: float = self.robot.intake.getEncoder().getPosition()
+
         # theoretical rotations * gear ratio = actual rotations
         self.actualRotation: float = (targetRotation * (1/self.robot.INTAKE_GEAR_RATIO))
-        # wheel spin roation = wheel distance in meters/ circumphrence in meters
-        while self.actualRotation <= targetRotation: # if we have not hit the rotation amount continue
-            self.robot.intake.set(power)
-        self.robot.intake.set(0) # else stop the motors
 
-def inch_to_meter(diamater: float, gear_ratio: float):
-    return (2.0 * gear_ratio * 100 * (1/diamater) * (1/2.54))
+        # convert actual rotations to actual Ticks of the encoder
+        self.actualTicks: float = self.actualRotation * self.robot.TPR # NOTE: ticks in a rotation is 4096 this is according to the rev hardware manager
+
+        # if we have not hit the rotation amount continue untill we are (loop untill we hit the amount)
+        while self.actualRotation >= encoderTicksTraveled(startingEncoderTicks, self.robot.intake.getEncoder().getPosition()):
+    
+            # drives the robot forward at the POWER that you define in the call of the function
+            self.robot.intake.set(power) 
+
+        # after the while loop exits (IE the INTAKE has spun the correct amount of rotations) stop the intake
+        self.robot.intake.set(0)
+
+def rotationToInch(diamater: float, gear_ratio: float):
+    return (2.0 * gear_ratio * (1/diamater))
+
+def encoderTicksTraveled(startingTick: float, currentTick: float):
+    """
+    this function allows you to find the amount of encoder ticks that have encured after the startingTick
+
+    startingTick = the tick at the begining of the function
+
+    currentTick = the tick at the time of function call "self.robot.motor.getEncoder"
+    """
+    # takes the current tick and minses the starting tick to find the tricks that are traveled 
+    ticksTraveled: float = (currentTick - startingTick)
+
+    # returns the ticksTravleled variable to be used
+    return ticksTraveled
