@@ -19,7 +19,32 @@ class RobotConfig(BaseConfig):
         Sets up drive motors, controllers, and other robot-specific hardware.
         """
         super().__init__()
+        # Constants
+        self.TPR: float = 4096.0
+
+        # drivetrain constants
+        self.DRIVETRAIN_WHEEL_DIAMATER: float = 6.0
+        self.DRIVETRAIN_GEAR_RATIO: float = 8.46
+
+        # arm constants
+        self.ARM_WHEEL_DIAMATER: float = 33.875
+        self.ARM_GEAR_RATIO: float = 216
+
+        # intake constants
+        self.INTAKE_WHEEL_DIAMATER: float = 4 # 0.1016 M
+        self.INTAKE_WHEEL_DIAMATER_METERS: float = 0.1016
+        self.INTAKE_GEAR_RATIO: float = 9
+
+        # elevator constants
+        self.ELEVATOR_WHEEL_DIAMATER: float = 1.910
+        self.ELEVATOR_GEAR_RATIO: float = 8
         
+        # constants for distance calcuation
+        self.TARGET_DRIVETRAIN_ROTATION: float = 0.0
+        self.TARGET_ARM_ROTATION: float = 0.0
+        self.TARGET_INTAKE_ROTATION: float = 0.0
+        self.TARGET_ELEVATOR_HIGHT: float = 0.0
+
         # CAN ID
         left_motor          : int = 2
         left_motor_follower : int = 10

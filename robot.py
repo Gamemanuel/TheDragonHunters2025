@@ -11,7 +11,7 @@ class MyRobot(wp.TimedRobot):
         should be used for any initialization code.
         """
         self.cameraserver = wp.CameraServer()
-        self.cameraserver.launch("vision.py:main")
+        self.cameraserver.launch("testVision.py:main")
         self.TURN_MULT: float = 0.5
 
         self.robot: RobotConfig = RobotConfig()
@@ -23,10 +23,10 @@ class MyRobot(wp.TimedRobot):
         self.drivetrainWheelDiameter: int = 6
 
         # every rotation of the motor the corresponding value is the distance traveled
-        self.drivetrainMeters: float = (2 * 8.46 * 100 / 2.54 / self.drivetrainWheelDiameter) # 2 is radians to the gear ratio (8.46) to in (/6) to meters * 100
-        self.armMeter: float = (2 * 216 * 100 / 33.857 / 2.54)
-        self.intakeMeter: float = (2 * 9 * 100 / 4 / 2.54)
-        self.elevatorMeter: float = (2 * 8 * 100 / 2.54 / 1.910)
+        self.drivetrainMeters: float = inch_to_meter(self.robot.DRIVETRAIN_WHEEL_DIAMATER, self.robot.DRIVETRAIN_GEAR_RATIO) # 2 is radians to the gear ratio (8.46) to in (/6) to meters * 100
+        self.armMeter: float = inch_to_meter(self.robot.ARM_WHEEL_DIAMATER, self.robot.ARM_GEAR_RATIO)  
+        self.intakeMeter: float = inch_to_meter(self.robot.INTAKE_WHEEL_DIAMATER, self.robot.INTAKE_GEAR_RATIO)
+        self.elevatorMeter: float = inch_to_meter(self.robot.ELEVATOR_WHEEL_DIAMATER, self.robot.ELEVATOR_GEAR_RATIO)
 
     def robotPeriodic(self):
         pass
@@ -41,8 +41,6 @@ class MyRobot(wp.TimedRobot):
         self.robot.drive.arcadeDrive(
             .5, 0
         )
-        
-
     def teleopInit(self):
         """This function is called once each time the robot enters teleoperated mode."""
         self.robot.setDriveIdleMode(COAST)
@@ -70,16 +68,45 @@ class MyRobot(wp.TimedRobot):
         # arm code
         self.robot.arm.set(self.robot.august.getRightY()*.50)
 
-    def targetElevatorPos(self, targetPos):
+    def targetElevatorPos(self, targetPos, power):
+        """ this function allows you to run the ELEVATOR to a specific distance UP in METERS
+        targetPos = Distance that you want to travel
+        power = power of ELEVAROR"""
         pass
         # 1 motor rotation = distancevar
-        # target pos = 
+        # rotations =  targetpos / distancevar
+        # 4092 encoder ticks = 1 rotation
 
-    def targetDrivetrainPos(self, targetPos):
+    def targetDrivetrainPos(self, targetPos, power):
+        """ this function allows you to run the DRIVETRAIN to a specific distance FORWARD in METERS
+        targetPos = Distance that you want to travel
+        power = power of DRIVETRAIN"""
+        #  
+        # while 
         pass
 
-    def targetArmPos(self, targetPos):
+    def targetArmPos(self, targetPos, power):
+        """ this function allows you to turn the ARM to a specific distance in METERS
+        targetPos = Distance that you want to the arm rotate
+        power = power of ARM"""
         pass
 
-    def targetIntakePos(self, targetPos):
+    def targetIntakePos(self, targetPos, power):
+        """ this function allows you to spin the INTAKE to a specific distance in METERS
+        power = power of INTAKE"""
         pass
+
+    def targetIntakeRotation(self, targetRotation, power):
+        """ this function allows you to spin the INTAKE forward for a specific # of rotations
+        power = power of INTAKE"""
+        # target rotation is in rotations and is the wanted acutal rotation
+        # ticks in a rotation is 4096
+        # theoretical rotations * gear ratio = actual rotations
+        self.actualRotation: float = (targetRotation * (1/self.robot.INTAKE_GEAR_RATIO))
+        # wheel spin roation = wheel distance in meters/ circumphrence in meters
+        while self.actualRotation <= targetRotation: # if we have not hit the rotation amount continue
+            self.robot.intake.set(power)
+        self.robot.intake.set(0) # else stop the motors
+
+def inch_to_meter(diamater: float, gear_ratio: float):
+    return (2.0 * gear_ratio * 100 * (1/diamater) * (1/2.54))

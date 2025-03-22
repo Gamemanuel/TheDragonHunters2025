@@ -1,0 +1,163 @@
+[33mcommit 003c12afff3d092267af8317c918f234c8b85e58[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: gamemanuel <themathnight@gmail.com>
+Date:   Fri Mar 21 13:55:51 2025 -0700
+
+    make the controlls work
+
+[1mdiff --git a/__pycache__/robot.cpython-312.pyc b/__pycache__/robot.cpython-312.pyc[m
+[1mindex 036e0c1..bd9617f 100644[m
+Binary files a/__pycache__/robot.cpython-312.pyc and b/__pycache__/robot.cpython-312.pyc differ
+[1mdiff --git a/robot.py b/robot.py[m
+[1mindex f2a3069..73d66b2 100644[m
+[1m--- a/robot.py[m
+[1m+++ b/robot.py[m
+[36m@@ -20,7 +20,13 @@[m [mclass MyRobot(wp.TimedRobot):[m
+         self.elevatorPos: int = 0[m
+         self.armPos: int = 0[m
+         self.intakeSpeed: float = 0[m
+[31m-        # self.HangPos: int = 0 [m
+[32m+[m[32m        self.drivetrainWheelDiameter: int = 6[m
+[32m+[m
+[32m+[m[32m        # every rotation of the motor the corresponding value is the distance traveled[m
+[32m+[m[32m        self.drivetrainMeters: float = (2 * 8.46 * 100 / 2.54 / self.drivetrainWheelDiameter) # 2 is radians to the gear ratio (8.46) to in (/6) to meters * 100[m
+[32m+[m[32m        self.armMeter: float = (2 * 216 * 100 / 33.857 / 2.54)[m
+[32m+[m[32m        self.intakeMeter: float = (2 * 9 * 100 / 4 / 2.54)[m
+[32m+[m[32m        self.elevatorMeter: float = (2 * 8 * 100 / 2.54 / 1.910)[m
+ [m
+     def robotPeriodic(self):[m
+         pass[m
+[36m@@ -32,15 +38,10 @@[m [mclass MyRobot(wp.TimedRobot):[m
+ [m
+     def autonomousPeriodic(self):[m
+         """This function is called periodically during autonomous."""[m
+[31m-        while self.robot.left_motor.getEncoder <= 1000:[m
+[31m-            self.robot.drive.arcadeDrive([m
+[31m-                1 , 0[m
+[31m-            )[m
+[31m-        self.robot.drive.arcadeDrive (0, 0)[m
+[31m-        while self.robot.intake.getEncoder <= 400:[m
+[31m-            self.robot.intake.set(1)[m
+[31m-        self.robot.intake.set(0)[m
+[31m-[m
+[32m+[m[32m        self.robot.drive.arcadeDrive([m
+[32m+[m[32m            .5, 0[m
+[32m+[m[32m        )[m
+[32m+[m[41m        [m
+ [m
+     def teleopInit(self):[m
+         """This function is called once each time the robot enters teleoperated mode."""[m
+[36m@@ -50,24 +51,35 @@[m [mclass MyRobot(wp.TimedRobot):[m
+     def teleopPeriodic(self):[m
+         """This function is called periodically during teleoperated mode."""[m
+         [m
+[31m-        # TODO: add a toogle for speed [m
+[31m-[m
+         self.robot.drive.arcadeDrive([m
+[31m-            -self.robot.hunter.getLeftY() * 0.70, self.robot.hunter.getRightX() * 0.70[m
+[32m+[m[32m            -self.robot.hunter.getLeftY() * 0.75, self.robot.hunter.getRightX() * 0.75[m
+         )[m
+ [m
+         # if the left joysticks is moved up and down then the elevator goes up or down[m
+         self.robot.elevator.set(self.robot.august.getLeftY() * 0.375)[m
+         self.robot.elevator_follower.set(self.robot.august.getLeftY() * 0.375)[m
+[31m-        # TODO: add it slower going down bu .50 going up[m
+[31m-        elevatorEncoder: float = self.robot.elevator.getEncoder[m
+ [m
+         # hold the elevator and elevator follower in the correct pos if the pos is not being changed[m
+[31m-[m
+[31m-        # zack's terrible method[m
+         if self.robot.august.getLeftY() == 0:[m
+             self.robot.elevator.set(.20)[m
+             self.robot.elevator_follower.set(.20)[m
+ [m
+[31m-        # gavin's better method[m
+[31m-        #TODO: add the better method ie make the code "motor break"[m
+[32m+[m[32m        # intake code[m
+[32m+[m[32m        self.robot.intake.set((self.robot.august.getLeftTriggerAxis() *.75) - (self.robot.august.getRightTriggerAxis()))[m
+[32m+[m[41m            [m
+[32m+[m[32m        # arm code[m
+[32m+[m[32m        self.robot.arm.set(self.robot.august.getRightY()*.50)[m
+[32m+[m
+[32m+[m[32m    def targetElevatorPos(self, targetPos):[m
+[32m+[m[32m        pass[m
+[32m+[m[32m        # 1 motor rotation = distancevar[m
+[32m+[m[32m        # target pos =[m[41m [m
+[32m+[m
+[32m+[m[32m    def targetDrivetrainPos(self, targetPos):[m
+[32m+[m[32m        pass[m
+[32m+[m
+[32m+[m[32m    def targetArmPos(self, targetPos):[m
+[32m+[m[32m        pass[m
+[32m+[m
+[32m+[m[32m    def targetIntakePos(self, targetPos):[m
+[32m+[m[32m        pass[m
+[1mdiff --git a/robot_code/robot_configs/R2025/RobotConfig.py b/robot_code/robot_configs/R2025/RobotConfig.py[m
+[1mindex 4dbe7b5..d03d322 100644[m
+[1m--- a/robot_code/robot_configs/R2025/RobotConfig.py[m
+[1m+++ b/robot_code/robot_configs/R2025/RobotConfig.py[m
+[36m@@ -29,7 +29,7 @@[m [mclass RobotConfig(BaseConfig):[m
+         elevator_follower   : int = 7 [m
+         arm                 : int = 9 [m
+         intake              : float = 8 [m
+[31m-        #hang                : int = 10 #TODO: check the actual config on the bot for this motor / the robot does not have a hang so not nessisarry[m
+[32m+[m
+         [m
+         # Drive Motors[m
+         self.left_motor          : REVSparkMax = self.addDriveMotor(REVSparkMax(left_motor, BRUSHLESS))[m
+[36m@@ -40,7 +40,7 @@[m [mclass RobotConfig(BaseConfig):[m
+         self.elevator_follower   : REVSparkMax = REVSparkMax(elevator_follower, BRUSHLESS)[m
+         self.arm                 : REVSparkMax = REVSparkMax(arm, BRUSHLESS)       [m
+         self.intake              : REVSparkMax = REVSparkMax(intake, BRUSHLESS)   [m
+[31m-        self.hang                : REVSparkMax = REVSparkMax(hang, BRUSHLESS)    [m
+[32m+[m[41m [m
+ [m
+         # Follower Motors[m
+         self.addFollowerMotor(self.left_motor, self.left_motor_follower)[m
+[1mdiff --git a/robot_code/robot_configs/R2025/__pycache__/RobotConfig.cpython-312.pyc b/robot_code/robot_configs/R2025/__pycache__/RobotConfig.cpython-312.pyc[m
+[1mindex 1c1c109..d41165d 100644[m
+Binary files a/robot_code/robot_configs/R2025/__pycache__/RobotConfig.cpython-312.pyc and b/robot_code/robot_configs/R2025/__pycache__/RobotConfig.cpython-312.pyc differ
+[1mdiff --git a/testVision.py b/testVision.py[m
+[1mdeleted file mode 100644[m
+[1mindex 97e3f85..0000000[m
+[1m--- a/testVision.py[m
+[1m+++ /dev/null[m
+[36m@@ -1,56 +0,0 @@[m
+[31m-from cscore import CameraServer[m
+[31m-import ntcore[m
+[31m-import cv2[m
+[31m-import json[m
+[31m-import numpy as np[m
+[31m-import time[m
+[31m-def main():[m
+[31m-    with open('/boot/frc.json') as f:[m
+[31m-        config = json.load(f)[m
+[31m-        camera = config['cameras'][0][m
+[31m-        width = camera['width'][m
+[31m-        height = camera['height'][m
+[31m-    nt = ntcore.NetworkTableInstance.getDefault()[m
+[31m-    CameraServer.startAutomaticCapture()[m
+[31m-    input_stream = CameraServer.getVideo()[m
+[31m-    output_stream = CameraServer.putVideo('Processed', width, height)[m
+[31m-    # Table for vision output information[m
+[31m-    vision_nt = nt.getTable('Vision')[m
+[31m-    # Allocating new images is very expensive, always try to preallocate[m
+[31m-    img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)[m
+[31m-    # Wait for NetworkTables to start[m
+[31m-    time.sleep(0.5)[m
+[31m-    while True:[m
+[31m-        start_time = time.time()[m
+[31m-        frame_time, input_img = input_stream.grabFrame(img)[m
+[31m-        output_img = np.copy(input_img)[m
+[31m-        # Notify output of error and skip iteration[m
+[31m-        if frame_time == 0:[m
+[31m-            output_stream.notifyError(input_stream.getError() )[m
+[31m-            continue[m
+[31m-        # Convert to HSV and threshold image[m
+[31m-        hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)[m
+[31m-        binary_img = cv2.inRange(hsv_img, (0, 0, 100), (85, 255, 255))[m
+[31m-        _, contour_list = cv2.findContours(binary_img, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)[m
+[31m-        x_list = [][m
+[31m-        y_list = [][m
+[31m-        for contour in contour_list:[m
+[31m-            # Ignore small contours that could be because of noise/bad thresholding[m
+[31m-     

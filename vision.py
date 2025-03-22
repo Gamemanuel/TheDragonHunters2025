@@ -31,12 +31,12 @@ def main():
         print("Fatal Error: Could not open the camera code:E1")
         exit() # kills the program because it is a fatal error
 
-    while True:
+     
         # Capture frame-by-frame
         ret, frame = cap.read()
         if not ret:
             print("Fatal Error: Could not camera input code:E2")
-            break #kills the loop and attempts to try again
+            exit #kills the loop and attempts to try again
 
         # Convert frame to grayscale
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) 
@@ -80,7 +80,7 @@ def main():
 
         # Break the loop if 'q' key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+            exit
 
     # Release the video capture and close all OpenCV windows
     cap.release()
