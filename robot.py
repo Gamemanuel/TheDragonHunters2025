@@ -11,7 +11,7 @@ class MyRobot(wp.TimedRobot):
         should be used for any initialization code.
         """
         self.cameraserver = wp.CameraServer()
-        self.cameraserver.launch("testVision.py:main")
+        self.cameraserver.launch("Vision.py:main")
         self.TURN_MULT: float = 0.5
 
         self.robot: RobotConfig = RobotConfig()
