@@ -59,10 +59,10 @@ class RobotConfig(BaseConfig):
         self.left_motor_follower : REVSparkMax = self.addDriveMotor(REVSparkMax(left_motor_follower, BRUSHLESS))
         self.right_motor         : REVSparkMax = self.addDriveMotor(REVSparkMax(right_motor, BRUSHLESS))
         self.right_motor_follower: REVSparkMax = self.addDriveMotor(REVSparkMax(right_motor_follower, BRUSHLESS))
-        self.elevator            : REVSparkMax = REVSparkMax(elevator, BRUSHLESS)
-        self.elevator_follower   : REVSparkMax = REVSparkMax(elevator_follower, BRUSHLESS)
-        self.arm                 : REVSparkMax = REVSparkMax(arm, BRUSHLESS)       
-        self.intake              : REVSparkMax = REVSparkMax(intake, BRUSHLESS)   
+        self.elevator            : REVSparkMax = self.addDriveMotor(REVSparkMax(elevator, BRUSHLESS))
+        self.elevator_follower   : REVSparkMax = self.addDriveMotor(REVSparkMax(elevator_follower, BRUSHLESS))
+        self.arm                 : REVSparkMax = self.addDriveMotor(REVSparkMax(arm, BRUSHLESS))   
+        self.intake              : REVSparkMax = self.addDriveMotor(REVSparkMax(intake, BRUSHLESS))
 
         # Follower Motors
         self.addFollowerMotor(self.left_motor, self.left_motor_follower)

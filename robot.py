@@ -40,9 +40,10 @@ class MyRobot(wp.TimedRobot):
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
-        #self.robot.drive.arcadeDrive(.5, 0)
+        self.robot.drive.arcadeDrive(.5, 0)
+        #if self.isAutonomousEnabled() == True: 
+        #    self.targetDrivetrainPos(5,.5)
 
-        self.targetDrivetrainPos(30,.5)
 
     def teleopInit(self):
         """This function is called once each time the robot enters teleoperated mode."""
@@ -114,7 +115,7 @@ class MyRobot(wp.TimedRobot):
         self.actualTicks: float = (self.actualRotation * self.robot.TPR)
 
         # wait untill the encoder ticks on the robot == the wanted encoder ticks
-        while self.actualTicks <= encoderTicksTraveled(startingEncoderTicks, self.robot.left_motor.getEncoder().getPosition()): 
+        while self.actualTicks >= encoderTicksTraveled(startingEncoderTicks, self.robot.left_motor.getEncoder().getPosition()): 
 
             # make the drivetrain drive forward
             self.robot.drive.arcadeDrive (power, 0)
